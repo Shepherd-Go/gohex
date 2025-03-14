@@ -25,22 +25,20 @@ This generator has basic structure like this
 Folder Struct:
   ROOT FOLDER
   ├─ cmd
+  │  └─ api
+  │  │  ├─ handler
+  │  │  ├─ middleware
+  │  │  └─ router
+  │  │     └─ groups
   │  └─ providers
   ├─ config
-  └─ internal
+  └─ core
+     ├─ adapters
      ├─ app
-     ├─ constants
      ├─ domain
-     │  ├─ dto
-     │  ├─ entity
-     │  └─ ports
-     └─ infra
-        ├─ api
-        │  ├─ handler
-        │  ├─ middleware
-        │  └─ router
-        │     └─ groups
-        └─ resource
+        ├─ entity
+        ├─ models
+        └─ ports
 ```
 
 ---
