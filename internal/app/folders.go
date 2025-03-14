@@ -7,6 +7,9 @@ import (
 )
 
 var folders = []string{
+	enums.GithubFolder,
+	enums.Workflows,
+	enums.VsFolder,
 	enums.CmdFolder,
 	enums.ProvidersFolder,
 	enums.ConfigFolder,

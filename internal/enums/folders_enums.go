@@ -1,6 +1,9 @@
 package enums
 
 const (
+	GithubFolder     = ".github"
+	Workflows        = GithubFolder + "/workflows"
+	VsFolder         = ".vscode"
 	CmdFolder        = "cmd"
 	ApiFolder        = CmdFolder + "/api"
 	HandlerFolder    = ApiFolder + "/handler"

@@ -34,22 +34,21 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var (
-	serverHost = config.Environments().ServerHost
-	serverPort = config.Environments().ServerPort
-)
-
 func main() {
-	container := providers.BuildContainer()
 
-	err := container.Invoke(func(router *router.Router, server *echo.Echo) {
+	container := provider.BuildContainer()
+
+	if err := container.Invoke(func(router *router.Router, server *echo.Echo, config config.Config) {
+
 		router.Init()
-		server.Logger.Fatal(server.Start(fmt.Sprintf("%s:%d", serverHost, serverPort)))
-	})
 
-	if err != nil {
-		log.Panic(err)
+		server.Logger.Fatal(server.Start(fmt.Sprintf(":%d", config.Server.Port)))
+
+	}); err != nil {
+
+		log.Fatal(err)
 	}
+
 }
 `
 
@@ -59,67 +58,38 @@ import (
 	"log"
 	"sync"
 
-	"github.com/kelseyhightower/envconfig"
+	"github.com/andresxlp/gosuite/config"
 )
-
-type Config struct {` + `
-	ServerHost		string ` + "`required:" + `"true"` + ` split_words:"true"` + "`" + `
-	ServerPort		int ` + "`required:" + `"true"` + ` split_words:"true"` + "`" + `
-}
 
 var (
-	once sync.Once
-	Cfg  Config
+	Once sync.Once
+	cfg  *Config
 )
 
-func Environments() Config {
-	once.Do(func() {
-		//If you use env file, uncomment this section and the functions:
-		//if err := setEnvsFromFile(".env"); err != nil {
-		//	log.Panicf("error reading local env file %s", err.Error())
-		//	return
-		//}
+func Get() *Config {
+	if cfg == nil {
+		log.Panic("Configuration has not yet been initialized")
+	}
+	return cfg
+}
 
-		if err := envconfig.Process("", &Cfg); err != nil {
-			log.Panicf("Error parsing environment vars %#v", err)
+type Config struct {
+	Server   Server   env:"server"
+}
+
+type Server struct {
+	Port int env:"port"
+}
+
+
+func Environments() {
+	Once.Do(func() {
+		cfg = new(Config)
+		if err := config.GetConfigFromEnv(cfg); err != nil {
+			log.Panicf("error parsing enviroment vars \n%v", err)
 		}
 	})
-
-	return Cfg
 }
-/*
-func setEnvsFromFile(fileName string) error {
-	root, err := rootDir()
-	if err != nil {
-		return err
-	}
-	file, err := os.Open(fmt.Sprintf("%s/%s", root, fileName))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-
-	if !scanner.Scan() {
-		return fmt.Errorf("env file is empty")
-	}
-
-	for scanner.Scan() {
-		w := strings.Split(scanner.Text(), "=")
-
-		if err = os.Setenv(w[0], w[1]); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func rootDir() (string, error) {
-	dir, err := os.Getwd()
-	return dir, err
-}
-*/
 `
 
 const HealthFile = `package handler
@@ -168,3 +138,82 @@ func (r *Router) Init() {
 	basePath.GET("/health", handler.HealthCheck)
 }
 `
+
+const Launch = `
+{
+    // Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Go Program with .env",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/main.go",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [],
+            "trace": "verbose"
+        }
+    ]
+}
+`
+
+const GitHubActionsIntegration = `name: Continuous Integration
+
+on:
+  pull_request:
+    branches:  ["main"] 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with: 
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+
+    - name: Install dependencies
+      run: go get ./...
+
+    - name: Build
+      run: go build -v ./...
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+      - uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+
+      - name: Load .env file
+        uses: aarcangeli/load-dotenv@v1
+        with:
+            filenames: |
+              .env.testing
+    
+      - name: Test with the Go CLI
+        run: go test -race -covermode atomic -coverprofile=covprofile ./...    
+
+  docker_validate:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Validate Dockerfile build
+        run: docker build --no-cache .
+`
+
+const EnvFile = `SERVER_PORT=3000`

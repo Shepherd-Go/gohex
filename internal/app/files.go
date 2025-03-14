@@ -10,11 +10,11 @@ import (
 type Service struct{}
 
 var (
-	files = []string{enums.MainFile, enums.DiFile, enums.ConfigFile, enums.HealthFile, enums.RouterFile, enums.GoModFile, enums.GoSumFile}
+	files = []string{enums.MainFile, enums.LaunchFile, enums.DiFile, enums.ConfigFile, enums.HealthFile, enums.RouterFile, enums.EnvFile, enums.GHAIntegrationFile, enums.GoModFile, enums.GoSumFile}
 )
 
 func (s *Service) CreateAllFiles(module string) {
-	for _, file := range files[:5] {
+	for _, file := range files[:8] {
 		createFiles(file, module)
 	}
 }
@@ -22,10 +22,13 @@ func (s *Service) CreateAllFiles(module string) {
 func createFiles(fileName, module string) {
 	queryTempl := map[string]enums.TemplateLabel{
 		files[0]: enums.GetMainFile,
-		files[1]: enums.GetDiFile,
-		files[2]: enums.GetConfigFile,
-		files[3]: enums.GetHealthFile,
-		files[4]: enums.GetRouterFile,
+		files[1]: enums.GetLaunchFile,
+		files[2]: enums.GetDiFile,
+		files[3]: enums.GetConfigFile,
+		files[4]: enums.GetHealthFile,
+		files[5]: enums.GetRouterFile,
+		files[6]: enums.GetEnvFile,
+		files[7]: enums.GetGHAIntegration,
 	}
 
 	createFile(fileName, templatesExec.GetTemplateWhitValues(queryTempl[fileName], dataTemplate(module)))

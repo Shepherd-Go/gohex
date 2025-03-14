@@ -35,11 +35,14 @@ func GetTemplateWhitValues(value enums.TemplateLabel, data map[string]interface{
 func getTemplate(value enums.TemplateLabel) string {
 	once.Do(func() {
 		templates = map[enums.TemplateLabel]string{
-			enums.GetMainFile:   templ.MainFile,
-			enums.GetDiFile:     templ.DiFile,
-			enums.GetConfigFile: templ.ConfigFile,
-			enums.GetHealthFile: templ.HealthFile,
-			enums.GetRouterFile: templ.RouterFile,
+			enums.GetMainFile:       templ.MainFile,
+			enums.GetLaunchFile:     templ.Launch,
+			enums.GetDiFile:         templ.DiFile,
+			enums.GetConfigFile:     templ.ConfigFile,
+			enums.GetHealthFile:     templ.HealthFile,
+			enums.GetRouterFile:     templ.RouterFile,
+			enums.GetEnvFile:        templ.EnvFile,
+			enums.GetGHAIntegration: templ.GitHubActionsIntegration,
 		}
 	})
 
