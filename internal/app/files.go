@@ -1,7 +1,7 @@
 package app
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/andresxlp/gohex/internal/enums"
 	"github.com/andresxlp/gohex/internal/utils/templatesExec"
@@ -39,7 +39,7 @@ func dataTemplate(module string) map[string]interface{} {
 }
 
 func createFile(fileName string, data string) {
-	err := ioutil.WriteFile(fileName, []byte(data), 0644)
+	err := os.WriteFile(fileName, []byte(data), 0644)
 	if err != nil {
 		panic(err)
 	}

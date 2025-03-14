@@ -3,7 +3,7 @@ package templates
 const DiFile = `package providers
 
 import (
-	"{{.module}}/internal/infra/api/router"
+	"{{.module}}/cmd/api/router"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/dig"
 )
@@ -30,7 +30,7 @@ import (
 
 	"{{.module}}/cmd/providers"
 	"{{.module}}/config"
-	"{{.module}}/internal/infra/api/router"
+	"{{.module}}/cmd/api/router"
 	"github.com/labstack/echo/v4"
 )
 
@@ -148,7 +148,7 @@ func HealthCheck(context echo.Context) error {
 const RouterFile = `package router
 
 import (
-	"{{.module}}/internal/infra/api/handler"
+	"{{.module}}/cmd/api/handler"
 
 	"github.com/labstack/echo/v4"
 )
