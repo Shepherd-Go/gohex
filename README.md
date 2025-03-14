@@ -24,6 +24,9 @@ This generator has basic structure like this
 ```
 Folder Struct:
   ROOT FOLDER
+  ├─ .github
+  │  └─ workflows
+  ├─ .vscode
   ├─ cmd
   │  └─ api
   │  │  ├─ handler
